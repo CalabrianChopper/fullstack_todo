@@ -24,7 +24,7 @@ class _TodoListPageState extends State<TodoListPage> {
 
   void navigateToAddPage() {
     final route = MaterialPageRoute(
-      builder: (context) => AddTodoPage(),
+      builder: (context) => const AddTodoPage(),
     );
     Navigator.push(context, route);
   }

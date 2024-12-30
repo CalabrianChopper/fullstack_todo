@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -70,13 +69,42 @@ class _AddTodoPageState extends State<AddTodoPage> {
         body: jsonEncode(body),
       );
 
-      print('Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      if (response.statusCode == 201) {
+        print('Data saved successfully');
+        print(response.body);
+        showSuccessMessage('Data saved successfully');
+      } 
+      else {
+        print('Failed to save data. Status code: ${response.statusCode}');
+        showErrorMessage('Failed to save data. Status code: ${response.statusCode}');
+      }
     } 
     
     catch (e) {
       print('Error: $e');
     }
+  }
+
+  void showSuccessMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showErrorMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+      ),
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
 }

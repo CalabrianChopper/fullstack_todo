@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/add_page.dart';
 import 'package:http/http.dart' as http;
@@ -54,7 +56,10 @@ class _TodoListPageState extends State<TodoListPage> {
       print('Response body: ${response.body}'); 
 
       if (response.statusCode == 200) {
-        print('Success: ${response.body}');
+        print('Success with status code: ${response.statusCode}');
+        print('Data: ${response.body}');
+        final json = jsonDecode(response.body) as Map;
+        final result = json['items'] as List;
       } else {
         print('Failed with status: ${response.statusCode}');
       }

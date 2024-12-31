@@ -13,6 +13,9 @@ class TodoListPage extends StatefulWidget {
 
 class _TodoListPageState extends State<TodoListPage> {
 
+  bool isLoading = true;
+  List items = [];
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +34,49 @@ class _TodoListPageState extends State<TodoListPage> {
       appBar: AppBar(
         title: const Text("ToDo QMT App"),
       ),
+      body: Visibility(
+        visible: !isLoading,
+        replacement: const Center(child: CircularProgressIndicator()),
+        child: RefreshIndicator(
+          onRefresh: fetchTodo,
+          child: ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context,index){
+              final item = items[index];
+              return ListTile(
+                leading: CircleAvatar(child: Text('${index + 1}')),
+                title: Text(item['title'] ?? 'No Title'),
+                subtitle: Text(item['description'] ?? 'No Description'),
+                // trailing: Icon(
+                //   item['is_completed'] == true ? Icons.check_circle : Icons.cancel,
+                //   color: item['is_completed'] == true ? Colors.green : Colors.red,
+                // )
+                trailing: PopupMenuButton(
+                  onSelected: (value){
+                    if(value == 'edit'){
+                      // navigate to edit page
+                    }else if(value == 'delete'){
+                      // delete item
+                    }
+                  },
+                  itemBuilder: (context){
+                    return [
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Text('Edit')
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Text('Delete')
+                      ),
+                    ];
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: navigateToAddPage,
         label: const Text("Add ToDo"),
@@ -48,6 +94,7 @@ class _TodoListPageState extends State<TodoListPage> {
   Future<void> fetchTodo() async {
     print('fetchTodo called'); 
     try {
+
       const url = "http://192.168.1.12:8000/v1/todos/";
       final uri = Uri.parse(url);
       final response = await http.get(uri);
@@ -58,12 +105,18 @@ class _TodoListPageState extends State<TodoListPage> {
       if (response.statusCode == 200) {
         print('Success with status code: ${response.statusCode}');
         print('Data: ${response.body}');
-        final json = jsonDecode(response.body) as Map;
-        final result = json['items'] as List;
+        final json = jsonDecode(response.body) as List;
+        setState(() {
+          items = json;
+        });
       } else {
         print('Failed with status: ${response.statusCode}');
       }
-    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    } 
+    catch (e) {
       print('Error: $e'); 
     }
   }

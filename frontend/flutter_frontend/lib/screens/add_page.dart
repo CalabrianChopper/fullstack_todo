@@ -19,6 +19,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add QMT ToDo"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
@@ -91,6 +92,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
         message,
         style: const TextStyle(color: Colors.white),
       ),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       duration: const Duration(seconds: 2),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -100,8 +102,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
     final snackBar = SnackBar(
       content: Text(
         message,
-        style: const TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+        style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
       ),
+      backgroundColor: const Color.fromARGB(255, 255, 0, 0),
       duration: const Duration(seconds: 2),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

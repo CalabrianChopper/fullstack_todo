@@ -22,17 +22,12 @@ class _TodoListPageState extends State<TodoListPage> {
     fetchTodo();
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   fetchTodo();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("ToDo QMT App"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Visibility(
         visible: !isLoading,
@@ -43,20 +38,18 @@ class _TodoListPageState extends State<TodoListPage> {
             itemCount: items.length,
             itemBuilder: (context,index){
               final item = items[index];
+              final id = item['id'].toString();
               return ListTile(
                 leading: CircleAvatar(child: Text('${index + 1}')),
                 title: Text(item['title'] ?? 'No Title'),
                 subtitle: Text(item['description'] ?? 'No Description'),
-                // trailing: Icon(
-                //   item['is_completed'] == true ? Icons.check_circle : Icons.cancel,
-                //   color: item['is_completed'] == true ? Colors.green : Colors.red,
-                // )
                 trailing: PopupMenuButton(
                   onSelected: (value){
                     if(value == 'edit'){
                       // navigate to edit page
                     }else if(value == 'delete'){
                       // delete item
+                      deleteById(id);
                     }
                   },
                   itemBuilder: (context){
@@ -91,6 +84,20 @@ class _TodoListPageState extends State<TodoListPage> {
     Navigator.push(context, route);
   }
 
+  Future<void> deleteById(String id) async {
+    final url = "http://192.168.1.12:8000/v1/todos/delete/$id/";
+    final uri = Uri.parse(url);
+    final response = await http.delete(uri);
+    if(response.statusCode == 204){
+      fetchTodo();
+      showSuccessMessage('Todo deleted successfully');
+    }
+    else{
+      print('Failed to delete item with id: $id and status code: ${response.statusCode}');
+      showErrorMessage('Failed to delete item with id: $id');
+    }
+  }
+
   Future<void> fetchTodo() async {
     print('fetchTodo called'); 
     try {
@@ -119,6 +126,30 @@ class _TodoListPageState extends State<TodoListPage> {
     catch (e) {
       print('Error: $e'); 
     }
+  }
+
+  void showSuccessMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showErrorMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+      ),
+      backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
 }

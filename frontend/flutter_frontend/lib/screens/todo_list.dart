@@ -47,6 +47,7 @@ class _TodoListPageState extends State<TodoListPage> {
                   onSelected: (value){
                     if(value == 'edit'){
                       // navigate to edit page
+                      navigateToEditPage(item);
                     }else if(value == 'delete'){
                       // delete item
                       deleteById(id);
@@ -77,11 +78,26 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
-  void navigateToAddPage() {
+  Future<void> navigateToAddPage() async {
     final route = MaterialPageRoute(
       builder: (context) => const AddTodoPage(),
     );
-    Navigator.push(context, route);
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchTodo();
+  }
+
+  Future<void> navigateToEditPage(Map item) async {
+    final route = MaterialPageRoute(
+      builder: (context) => AddTodoPage(todo:item),
+    );
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchTodo();
   }
 
   Future<void> deleteById(String id) async {
@@ -89,8 +105,12 @@ class _TodoListPageState extends State<TodoListPage> {
     final uri = Uri.parse(url);
     final response = await http.delete(uri);
     if(response.statusCode == 204){
-      fetchTodo();
+      final filtered = items.where((item) => item['id'] != id).toList();
+      setState((){
+        items = filtered;
+      });
       showSuccessMessage('Todo deleted successfully');
+      fetchTodo();
     }
     else{
       print('Failed to delete item with id: $id and status code: ${response.statusCode}');

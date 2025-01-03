@@ -67,6 +67,7 @@ class FinalViewState extends State<FinalView> {
                 });
               },
               controller: pageController,
+              physics: const NeverScrollableScrollPhysics(),
               children: screens,
             )),
             Positioned(
@@ -191,10 +192,11 @@ class FinalViewState extends State<FinalView> {
                             width: AppSizes.blockSizeHorizontal * 12,
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: gradient,
-                            )),
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: gradient,
+                              )
+                            ),
                           ),
                         ),
                       ],
